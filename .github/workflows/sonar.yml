@@ -21,10 +21,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y build-essential
 
-      # Build C++ project using g++
+      # Build C++ project (src + include)
       - name: Build C++ project
         run: |
-          g++ -std=c++17 -O2 -Wall -o app main.cpp
+          g++ -std=c++17 -O2 -Wall -Iinclude -o app src/*.cpp
 
       # Run app or tests (optional, won't fail if missing)
       - name: Run program/tests
