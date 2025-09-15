@@ -26,10 +26,9 @@ jobs:
         run: |
           g++ -std=c++17 -O2 -Wall -Iinclude -o app src/*.cpp
 
-      # Run app or tests (optional, won't fail if missing)
-      - name: Run program/tests
-        run: |
-          ./app || true
+      # Skip running binary since it's interactive
+      - name: Skip program execution
+        run: echo "Skipping execution (program is interactive CLI)"
 
       # SonarCloud Scan
       - name: SonarCloud Scan
