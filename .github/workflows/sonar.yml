@@ -19,21 +19,16 @@ jobs:
       - name: Install build tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential cmake
+          sudo apt-get install -y build-essential
 
-      # Build C++ project
+      # Build C++ project using g++
       - name: Build C++ project
         run: |
-          mkdir -p build
-          cd build
-          cmake ..
-          make -j$(nproc)
+          g++ -std=c++17 -O2 -Wall -Iinclude -o app src/*.cpp
 
-      # (Optional) Skip tests since CLI is interactive
-      # - name: Run tests
-      #   run: |
-      #     cd build
-      #     ctest || true
+      # Skip running app since it's interactive CLI
+      - name: Skip execution
+        run: echo "Skipping execution (program is interactive CLI)"
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v5
