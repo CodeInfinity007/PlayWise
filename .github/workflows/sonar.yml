@@ -11,27 +11,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Install build tools
+      - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential
+          sudo apt-get install -y build-essential cmake unzip wget
 
-      # Build C++ project using g++
-      - name: Build C++ project
+      # Download build-wrapper
+      - name: Download build-wrapper
         run: |
-          g++ -std=c++17 -O2 -Wall -Iinclude -o app src/*.cpp
+          wget -q https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
+          unzip -q build-wrapper-linux-x86.zip
+          echo "${PWD}/build-wrapper-linux-x86" >> $GITHUB_PATH
 
-      # Skip running app since it's interactive CLI
-      - name: Skip execution
-        run: echo "Skipping execution (program is interactive CLI)"
+      # Build C++ project with build-wrapper
+      - name: Build with build-wrapper
+        run: |
+          mkdir -p build
+          cd build
+          cmake ..
+          # wrap make with build-wrapper
+          build-wrapper-linux-x86-64 --out-dir bw-output make -j$(nproc)
 
+      # Run SonarCloud Scan
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v5
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: "https://sonarcloud.io"
+          SONARQUBE: ${{ secrets.SONARQUBE }}
