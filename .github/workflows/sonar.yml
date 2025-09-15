@@ -32,7 +32,8 @@ jobs:
         run: |
           mkdir -p build
           build-wrapper-linux-x86-64 --out-dir build/bw-output \
-            g++ -std=c++17 -Wall -O2 -o build/app src/*.cpp
+            g++ -std=c++17 -Wall -O2 -Iinclude -o build/app src/*.cpp
+
 
       # Run SonarCloud Scan
       - name: SonarCloud Scan
