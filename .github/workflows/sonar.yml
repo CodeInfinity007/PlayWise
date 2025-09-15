@@ -18,26 +18,24 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential cmake unzip wget
+          sudo apt-get install -y build-essential unzip wget
 
-      # Download build-wrapper
+      # Download Sonar build-wrapper
       - name: Download build-wrapper
         run: |
           wget -q https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
           unzip -q build-wrapper-linux-x86.zip
           echo "${PWD}/build-wrapper-linux-x86" >> $GITHUB_PATH
 
-      # Build C++ project with build-wrapper
+      # Build with g++ wrapped
       - name: Build with build-wrapper
         run: |
           mkdir -p build
-          cd build
-          cmake ..
-          # wrap make with build-wrapper
-          build-wrapper-linux-x86-64 --out-dir bw-output make -j$(nproc)
+          build-wrapper-linux-x86-64 --out-dir build/bw-output \
+            g++ -std=c++17 -Wall -O2 -o build/app src/*.cpp
 
       # Run SonarCloud Scan
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v5
         env:
-          SONARQUBE: ${{ secrets.SONARQUBE }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
